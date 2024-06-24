@@ -39,7 +39,7 @@ class AI21API(ModelAPI):
         self,
         model_name: str,
         base_url: str | None = None,
-        config: GenerateConfig = GenerateConfig(),
+        config: GenerateConfig = GenerateConfig(),  # noqa: B008
         **model_args: dict[str, Any],
     ) -> None:
         super().__init__(model_name=model_name, base_url=base_url, config=config)
@@ -125,7 +125,7 @@ def completion_choice(choice: AI21ChatCompletionResponseChoice) -> ChatCompletio
             choice_stop_reason(choice)
             if choice.finish_reason is not None
             else "unknown"
-        )
+        ),
     )
 
 
