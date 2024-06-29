@@ -36,6 +36,7 @@ python = ">=3.11.7, <4.0"
 ai21 = "^2.7.0"
 inspect-ai = "^0.3.15"
 requests = "^2.32.3"
+openai = "^1.35.3"
 
 [tool.poetry.group.dev.dependencies]
 mkdocstrings = {version = ">=0.23", extras = ["python"]}
@@ -125,5 +126,6 @@ disallow_any_unimported = true
 # ]
 # disallow_untyped_defs = false
 
-[project.entry-points.inspect_ai]
-inspect_custom_models = "inspect_custom_models.ai21_model"
+# entry point for inspect-ai
+[tool.poetry.plugins.inspect_ai]
+inspect_custom_models = "inspect_custom_models.custom_models"

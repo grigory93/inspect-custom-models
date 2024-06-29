@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from ai21 import AsyncAI21Client
+from ai21 import AsyncAI21Client, TooManyRequestsError
 from ai21.models.chat import ChatCompletionResponse as AI21ChatCompletionResponse
 from ai21.models.chat import (
     ChatCompletionResponseChoice as AI21ChatCompletionResponseChoice,
@@ -28,14 +28,16 @@ from inspect_ai.model import (
     ToolInfo,
     modelapi,
 )
+from typing_extensions import override
 
 AI21_API_KEY = "AI21_API_KEY"
 AI21_MODELS = ["jamba-instruct-preview"]
 
 
+
 @modelapi(name="ai21")
 class AI21API(ModelAPI):
-    def _init_(
+    def __init__(
         self,
         model_name: str,
         base_url: str | None = None,
@@ -104,6 +106,20 @@ class AI21API(ModelAPI):
                 total_tokens=response.usage.total_tokens,
             ),
         )
+
+    @override
+    def is_rate_limit(self, ex: BaseException) -> bool:
+        return isinstance(ex,  TooManyRequestsError)
+
+    @override
+    def connection_key(self) -> str:
+        return self.api_key
+
+    # not clear what the mistral default max tokens is (not documented)
+    # so we set it to the default to be sure
+    @override
+    def max_tokens(self) -> int:
+        return DEFAULT_MAX_TOKENS
 
 
 def ai21_chat_message(message: ChatMessage) -> AI21ChatMessage:
