@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from inspect_ai.model import (
@@ -17,6 +18,9 @@ from inspect_ai.model import (
 )
 
 ENDPOINT_MODELS = ["eai-stream"]
+# You must provide a base URL when using endpoint model.
+# Use the --model-base-url CLI flag to set the base URL.
+ENDPOINT_BASE_URL = "EAI_ENDPOINT_BASE_URL"
 
 @modelapi(name="endpoint")
 class Endpoint(ModelAPI):
@@ -27,6 +31,8 @@ class Endpoint(ModelAPI):
             config: GenerateConfig = GenerateConfig(),  # noqa: B008
             **model_args: dict[str, Any],
     ) -> None:
+        if not base_url:
+            base_url = os.environ.get(ENDPOINT_BASE_URL, None)
         super().__init__(model_name=model_name, base_url=base_url, config=config)
         self.model_args = model_args
 
