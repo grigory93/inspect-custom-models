@@ -3,15 +3,20 @@ from __future__ import annotations
 from typing import Any
 
 from inspect_ai.model import (
+    ChatCompletionChoice,
     ChatMessage,
+    ChatMessageAssistant,
     GenerateConfig,
     ModelAPI,
     ModelOutput,
+    ModelUsage,
+    StopReason,
     ToolChoice,
     ToolInfo,
     modelapi,
 )
 
+ENDPOINT_MODELS = ["eai-stream"]
 
 @modelapi(name="endpoint")
 class Endpoint(ModelAPI):
@@ -33,10 +38,28 @@ class Endpoint(ModelAPI):
             tool_choice: ToolChoice,
             config: GenerateConfig,
     ) -> ModelOutput:
-        message = endpoint_messagee(input[-1])
+        message = endpoint_message(input[-1])
 
-        return None
+        response = await call_endpoint(message) # call endpoint here 
+        choices = endpoint_choice_from_response(response)
+        return ModelOutput(
+            model=self.model_name,
+            choices=choices,
+            usage=None,
+        )
 
 
 def endpoint_message(message: ChatMessage) -> str:
     return message.text
+
+
+async def call_endpoint(message: str) -> str:
+    return message
+
+
+def endpoint_choice_from_response(answer: str) -> list[ChatCompletionChoice]:
+    return [ChatCompletionChoice(
+        message=ChatMessageAssistant(
+            content=answer, source="generate",
+        ),
+    )]
