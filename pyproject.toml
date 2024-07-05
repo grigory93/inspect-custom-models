@@ -129,3 +129,4 @@ disallow_any_unimported = true
 # entry point for inspect-ai
 [tool.poetry.plugins.inspect_ai]
 inspect_custom_models = "inspect_custom_models.custom_models"
+inspect_custom_modles = "inspect_custom_models.custom_endpoint"

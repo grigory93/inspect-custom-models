@@ -80,3 +80,6 @@ venv.bak/
 
 # inspect-ai logs
 /logs
+
+# misc
+.DS_Store
