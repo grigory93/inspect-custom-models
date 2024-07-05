@@ -10,8 +10,6 @@ from inspect_ai.model import (
     GenerateConfig,
     ModelAPI,
     ModelOutput,
-    ModelUsage,
-    StopReason,
     ToolChoice,
     ToolInfo,
     modelapi,
@@ -31,22 +29,27 @@ class Endpoint(ModelAPI):
             config: GenerateConfig = GenerateConfig(),  # noqa: B008
             **model_args: dict[str, Any],
     ) -> None:
-        if not base_url:
-            base_url = os.environ.get(ENDPOINT_BASE_URL, None)
         super().__init__(model_name=model_name, base_url=base_url, config=config)
         self.model_args = model_args
+
+        if not base_url:
+            base_url = os.environ.get(ENDPOINT_BASE_URL, None)
+
+        if model_name not in ENDPOINT_MODELS:
+            message = f"Invalid endpoint name: {model_name}"
+            raise ValueError(message)
 
 
     async def generate(
             self,
             input: list[ChatMessage],  # noqa: A002
-            tools: list[ToolInfo], 
+            tools: list[ToolInfo],
             tool_choice: ToolChoice,
             config: GenerateConfig,
     ) -> ModelOutput:
         message = endpoint_message(input[-1])
 
-        response = await call_endpoint(message) # call endpoint here 
+        response = await call_endpoint(message) # call endpoint here
         choices = endpoint_choice_from_response(response)
         return ModelOutput(
             model=self.model_name,
